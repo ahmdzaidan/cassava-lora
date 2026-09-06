@@ -1,0 +1,114 @@
+# ============================================================
+# analysis.yaml — Konfigurasi Analisis (Fase 5, 6, 7)
+# ============================================================
+
+# Global settings
+global:
+  seed: 42
+  device: "cuda"  # fallback ke "cpu" otomatis jika GPU tidak tersedia
+  figures_dir: "reports/figures"
+  tables_dir: "reports/tables"
+  figure_format: ["png", "svg"]
+  figure_dpi: 300
+
+# Checkpoint paths untuk analisis
+checkpoints:
+  pretrained_backbone: "experiments/checkpoints/pretrained_backbone.pt"
+  linear_probe: "experiments/checkpoints/linear_probe/best_model.pt"
+  full_finetune: "experiments/checkpoints/full_finetune/best_model.pt"
+  lora:
+    r4: "experiments/checkpoints/lora/lora_r4/best_model.pt"
+    r8: "experiments/checkpoints/lora/lora_r8/best_model.pt"
+    r16: "experiments/checkpoints/lora/lora_r16/best_model.pt"
+    r32: "experiments/checkpoints/lora/lora_r32/best_model.pt"
+  lora_weights:
+    r4: "experiments/checkpoints/lora/lora_r4/lora_weights.pt"
+    r8: "experiments/checkpoints/lora/lora_r8/lora_weights.pt"
+    r16: "experiments/checkpoints/lora/lora_r16/lora_weights.pt"
+    r32: "experiments/checkpoints/lora/lora_r32/lora_weights.pt"
+
+# ==========================================
+# Fase 5 — Evaluasi T1 (Performa Klasifikasi)
+# ==========================================
+evaluation_t1:
+  output_table: "reports/tables/comparison_T1.csv"
+  figures:
+    accuracy_vs_params: "reports/figures/fig_T1_accuracy_vs_params"
+    confusion_matrices: "reports/figures/fig_T1_confusion_matrices"
+    f1_comparison: "reports/figures/fig_T1_f1_comparison"
+
+# ==========================================
+# Fase 6 — Analisis T2 (Struktur Embedding/Attention)
+# ==========================================
+svd_analysis:
+  # Layers yang dianalisis (all 12 encoder layers)
+  layers: "all"  # atau list [0, 1, 2, ..., 11]
+  # Top-k singular vectors untuk perbandingan
+  top_k_singular: 10
+  # Threshold untuk deteksi intruder dimension
+  intruder_threshold: 0.1  # cosine similarity < threshold = intruder
+  
+  figures:
+    svd_decay: "reports/figures/fig_T2_svd_decay_per_layer"
+    intruder_dimensions: "reports/figures/fig_T2_intruder_dimensions"
+  tables:
+    svd_summary: "reports/tables/svd_summary.csv"
+
+attention_analysis:
+  # Jumlah sample citra untuk visualisasi attention
+  num_samples: 10  # per kelas
+  
+  figures:
+    attention_heatmap: "reports/figures/fig_T2_attention_heatmap_comparison"
+    attention_entropy: "reports/figures/fig_T2_attention_entropy"
+
+cka_analysis:
+  enabled: true  # opsional, cross-check T2
+  figures:
+    cka_heatmap: "reports/figures/fig_T2_cka_heatmap"
+
+# ==========================================
+# Fase 7 — Analisis T3 (Pergeseran CLS & Korelasi)
+# ==========================================
+cls_shift_analysis:
+  # Layers untuk ekstraksi CLS (all atau specific)
+  layers: "all"
+  # Jumlah sampel (0 = seluruh test set)
+  num_samples: 0
+  
+  figures:
+    shift_per_layer: "reports/figures/fig_T3_cls_shift_per_layer"
+
+clustering_analysis:
+  # Metrik kluster
+  metrics: ["silhouette", "davies_bouldin"]
+  
+  tables:
+    clustering_metrics: "reports/tables/clustering_metrics.csv"
+
+dimensionality_reduction:
+  # t-SNE parameters
+  tsne:
+    perplexity: 30
+    n_iter: 1000
+    random_state: 42
+  
+  # UMAP parameters  
+  umap:
+    n_neighbors: 15
+    min_dist: 0.1
+    metric: "cosine"
+    random_state: 42
+  
+  figures:
+    tsne_before_after: "reports/figures/fig_T3_tsne_before_after"
+    umap_before_after: "reports/figures/fig_T3_umap_before_after"
+
+correlation_analysis:
+  # Metode korelasi
+  methods: ["pearson", "spearman"]
+  
+  tables:
+    correlation: "reports/tables/correlation_shift_vs_accuracy.csv"
+  figures:
+    scatter_correlation: "reports/figures/fig_T3_correlation_shift_accuracy"

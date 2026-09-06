@@ -1,0 +1,68 @@
+# ============================================================
+# train_full_finetune.yaml — Full Fine-Tuning Configuration
+# ============================================================
+
+experiment:
+  name: "full_finetune"
+  description: "Full fine-tuning of MAE-ViT backbone + classifier head"
+  seed: 42
+
+training:
+  epochs: 50
+  batch_size: 32
+  
+  # Optimizer (AdamW)
+  optimizer:
+    type: "adamw"
+    # Discriminative learning rate: backbone lebih kecil dari head
+    lr_backbone: 1.0e-5
+    lr_head: 1.0e-3
+    weight_decay: 0.05
+    betas: [0.9, 0.999]
+  
+  # Learning rate scheduler
+  scheduler:
+    type: "cosine"  # options: "cosine", "step", "plateau"
+    warmup_epochs: 5
+    min_lr: 1.0e-7
+  
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 10
+    monitor: "val_f1_macro"
+    mode: "max"
+  
+  # Mixed precision
+  mixed_precision: true
+  
+  # Gradient accumulation (untuk batch size efektif lebih besar)
+  gradient_accumulation_steps: 1
+  
+  # Gradient clipping
+  max_grad_norm: 1.0
+
+# Loss
+loss:
+  type: "cross_entropy"  # options: "cross_entropy", "focal"
+  label_smoothing: 0.1
+
+# Logging
+logging:
+  log_dir: "experiments/logs/full_finetune"
+  log_every_n_steps: 10
+  use_tensorboard: true
+  use_wandb: false
+  wandb_project: "cassava-lora-mae-vit"
+
+# Checkpointing
+checkpointing:
+  save_dir: "experiments/checkpoints/full_finetune"
+  save_best_only: true
+  save_last: true
+  monitor: "val_f1_macro"
+
+# Evaluation
+evaluation:
+  eval_every_n_epochs: 1
+  results_file: "reports/tables/results_full_finetune.json"

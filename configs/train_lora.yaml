@@ -1,0 +1,98 @@
+# ============================================================
+# train_lora.yaml — LoRA Fine-Tuning Configuration
+# ============================================================
+
+experiment:
+  name: "lora_finetune"
+  description: "LoRA adaptation on MAE-ViT backbone (frozen) + classifier head"
+  seed: 42
+
+# LoRA configuration
+lora:
+  # Implementation: "peft" (HuggingFace PEFT) or "custom" (src/models/lora_layers.py)
+  implementation: "peft"
+  
+  # Target modules untuk attach LoRA
+  # Opsi 1 (klasik): ["query", "value"]
+  # Opsi 2 (full attention): ["query", "key", "value", "dense"]  
+  target_modules_configs:
+    qv:
+      modules: ["query", "value"]
+      description: "LoRA klasik (Q, V only)"
+    qkvo:
+      modules: ["query", "key", "value", "dense"]
+      description: "LoRA full attention (Q, K, V, O)"
+  
+  # Default target modules
+  default_target: "qv"
+  
+  # Rank grid untuk eksperimen
+  rank_grid: [4, 8, 16, 32]
+  default_rank: 8
+  
+  # Alpha = 2 * rank (rasio umum)
+  alpha_ratio: 2  # alpha = alpha_ratio * rank
+  
+  # Dropout LoRA
+  lora_dropout: 0.05
+  
+  # Bias
+  bias: "none"  # options: "none", "all", "lora_only"
+
+training:
+  epochs: 50
+  batch_size: 32
+  
+  # Optimizer (hanya LoRA params + head yang di-update)
+  optimizer:
+    type: "adamw"
+    lr: 2.0e-4  # LoRA biasanya bisa pakai LR lebih tinggi
+    lr_head: 1.0e-3
+    weight_decay: 0.01
+    betas: [0.9, 0.999]
+  
+  # Learning rate scheduler
+  scheduler:
+    type: "cosine"
+    warmup_epochs: 5
+    min_lr: 1.0e-6
+  
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 10
+    monitor: "val_f1_macro"
+    mode: "max"
+  
+  # Mixed precision
+  mixed_precision: true
+  
+  gradient_accumulation_steps: 1
+  max_grad_norm: 1.0
+
+# Loss
+loss:
+  type: "cross_entropy"
+  label_smoothing: 0.1
+
+# Logging
+logging:
+  log_dir: "experiments/logs/lora"
+  log_every_n_steps: 10
+  use_tensorboard: true
+  use_wandb: false
+  wandb_project: "cassava-lora-mae-vit"
+
+# Checkpointing
+checkpointing:
+  save_dir: "experiments/checkpoints/lora"
+  save_best_only: true
+  save_last: true
+  monitor: "val_f1_macro"
+  # Simpan bobot LoRA (A, B) secara terpisah per layer
+  save_lora_weights_separately: true
+
+# Evaluation
+evaluation:
+  eval_every_n_epochs: 1
+  results_file: "reports/tables/results_lora_grid.csv"

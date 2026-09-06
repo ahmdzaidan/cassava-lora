@@ -1,0 +1,69 @@
+# ============================================================
+# data.yaml — Konfigurasi Data Pipeline
+# ============================================================
+
+# Path dataset (relatif terhadap project root)
+dataset:
+  raw_dir: "../Dataset/train/train"  # path ke folder dataset yang sudah ada
+  processed_dir: "data/processed"
+  splits_dir: "data/splits"
+  
+  # Nama kelas dan label mapping
+  classes:
+    - "cbb"     # Cassava Bacterial Blight
+    - "cbsd"    # Cassava Brown Streak Disease
+    - "cgm"     # Cassava Green Mottle
+    - "cmd"     # Cassava Mosaic Disease
+    - "healthy" # Healthy
+
+  class_labels:
+    cbb: 0
+    cbsd: 1
+    cgm: 2
+    cmd: 3
+    healthy: 4
+
+# Split configuration
+split:
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  seed: 42
+  stratified: true
+
+# Preprocessing
+preprocessing:
+  image_size: 224
+  # ImageNet normalization (standard for pretrained ViT)
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+
+# Augmentasi (hanya untuk training set — ringan, agar tidak distorsi analisis embedding)
+augmentation:
+  train:
+    random_resized_crop:
+      size: 224
+      scale: [0.8, 1.0]
+    random_horizontal_flip: 0.5
+    color_jitter:
+      brightness: 0.2
+      contrast: 0.2
+      saturation: 0.1
+      hue: 0.05
+  val_test:
+    resize: 256
+    center_crop: 224
+
+# Class imbalance handling
+imbalance:
+  method: "weighted_sampler"  # options: "weighted_sampler", "class_weight_loss", "both"
+
+# DataLoader
+dataloader:
+  batch_size: 32
+  num_workers: 4
+  pin_memory: true
+
+# Output reports
+reports:
+  class_distribution: "reports/tables/class_distribution.csv"

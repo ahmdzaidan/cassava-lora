@@ -1,0 +1,41 @@
+# ============================================================
+# model_mae_vit.yaml — Konfigurasi Backbone MAE-ViT
+# ============================================================
+
+backbone:
+  # Hugging Face model identifier
+  model_name: "facebook/vit-mae-base"
+  
+  # ViT-Base/16 architecture specs
+  architecture:
+    patch_size: 16
+    image_size: 224
+    hidden_size: 768
+    num_hidden_layers: 12
+    num_attention_heads: 12
+    intermediate_size: 3072
+  
+  # Pretrained weights strategy
+  # Opsi A: gunakan checkpoint MAE pretrained publik (direkomendasikan)
+  pretrained: true
+  
+  # Domain-adaptive pretraining (opsional, fase lanjut)
+  domain_adaptive_pretrain:
+    enabled: false
+    epochs: 10
+    mask_ratio: 0.75
+    lr: 1.5e-4
+
+# Classifier head
+classifier:
+  num_classes: 5
+  head_type: "linear"  # options: "linear", "mlp"
+  dropout: 0.1
+  # MLP head config (jika head_type == "mlp")
+  mlp:
+    hidden_dim: 256
+    num_layers: 2
+
+# Checkpoint paths
+checkpoints:
+  pretrained_backbone: "experiments/checkpoints/pretrained_backbone.pt"

@@ -1,0 +1,47 @@
+# ============================================================
+# .gitignore — Cassava LoRA MAE-ViT Research Pipeline
+# ============================================================
+
+# Data (large files, do not commit)
+data/raw/
+data/processed/
+*.zip
+*.tar.gz
+
+# Experiment checkpoints (large)
+experiments/checkpoints/
+experiments/logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+venv/
+env/
+*.env
+
+# Weights & Biases
+wandb/
+
+# Misc
+*.log
