@@ -4,7 +4,7 @@
 
 # Path dataset (relatif terhadap project root)
 dataset:
-  raw_dir: "../Dataset/train/train"  # path ke folder dataset yang sudah ada
+  raw_dir: "/content/drive/MyDrive/SKRIPSI/cassava-lora/data/train"  # path ke folder dataset yang sudah ada
   processed_dir: "data/processed"
   splits_dir: "data/splits"
   
