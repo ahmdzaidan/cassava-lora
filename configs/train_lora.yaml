@@ -17,10 +17,10 @@ lora:
   # Opsi 2 (full attention): ["query", "key", "value", "dense"]  
   target_modules_configs:
     qv:
-      modules: ["query", "value"]
+      modules: ["q_proj", "v_proj"]
       description: "LoRA klasik (Q, V only)"
     qkvo:
-      modules: ["query", "key", "value", "dense"]
+      modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
       description: "LoRA full attention (Q, K, V, O)"
   
   # Default target modules
