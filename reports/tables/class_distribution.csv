@@ -1,0 +1,16 @@
+split,class_name,count,percentage
+train,cbb,326,8.23
+train,cbsd,1010,25.51
+train,cgm,541,13.67
+train,cmd,1861,47.01
+train,healthy,221,5.58
+val,cbb,70,8.25
+val,cbsd,216,25.47
+val,cgm,116,13.68
+val,cmd,398,46.93
+val,healthy,48,5.66
+test,cbb,70,8.24
+test,cbsd,217,25.56
+test,cgm,116,13.66
+test,cmd,399,47.0
+test,healthy,47,5.54
