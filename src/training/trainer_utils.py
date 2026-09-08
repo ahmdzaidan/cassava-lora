@@ -390,12 +390,12 @@ def evaluate(
     recall_macro = recall_score(all_labels, all_preds, average="macro")
     
     return {
-        "val_loss": avg_loss,
-        "val_accuracy": accuracy,
-        "val_f1_macro": f1_macro,
-        "val_f1_weighted": f1_weighted,
-        "val_precision_macro": precision_macro,
-        "val_recall_macro": recall_macro,
+        "val_loss": float(avg_loss),
+        "val_accuracy": float(accuracy),
+        "val_f1_macro": float(f1_macro),
+        "val_f1_weighted": float(f1_weighted),
+        "val_precision_macro": float(precision_macro),
+        "val_recall_macro": float(recall_macro),
     }
 
 
