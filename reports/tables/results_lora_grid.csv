@@ -1,0 +1,2 @@
+rank,alpha,target_modules,implementation,total_params,trainable_params,trainable_pct,training_time_s,num_epochs_trained,best_val_metric,test_accuracy,test_f1_macro,test_f1_weighted,test_precision_macro,test_recall_macro
+32,64,qv,peft,87572741,1183493,1.3514,752.1811389923096,39,0.7970824106275176,0.8256772673733804,0.7790583739204077,0.8326793446903191,0.7554576113306105,0.8186499168661008

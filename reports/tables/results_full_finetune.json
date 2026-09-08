@@ -1,0 +1,17 @@
+{
+  "experiment": "full_finetune",
+  "total_params": 86393093,
+  "trainable_params": 86393093,
+  "trainable_pct": 100.0,
+  "training_time_s": 856.4260945320129,
+  "num_epochs_trained": 41,
+  "best_val_metric": 0.8283094307648928,
+  "test_metrics": {
+    "val_loss": 0.7009111068866871,
+    "val_accuracy": 0.8468786808009423,
+    "val_f1_macro": 0.803046490215326,
+    "val_f1_weighted": 0.8510140714448918,
+    "val_precision_macro": 0.788969122962447,
+    "val_recall_macro": 0.8237412123070321
+  }
+}

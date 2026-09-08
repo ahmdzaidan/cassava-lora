@@ -1,0 +1,17 @@
+{
+  "experiment": "linear_probe",
+  "total_params": 86393093,
+  "trainable_params": 3845,
+  "trainable_pct": 0.0045,
+  "training_time_s": 2105.4432513713837,
+  "num_epochs_trained": 62,
+  "best_val_metric": 0.4506779807316835,
+  "test_metrics": {
+    "val_loss": 1.264740992475439,
+    "val_accuracy": 0.4793875147232038,
+    "val_f1_macro": 0.4530206423042341,
+    "val_f1_weighted": 0.5095078342910379,
+    "val_precision_macro": 0.5481599044549864,
+    "val_recall_macro": 0.6157839258881352
+  }
+}
