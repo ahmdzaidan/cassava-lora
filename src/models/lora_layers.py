@@ -17,6 +17,8 @@ import torch.nn.functional as F
 from typing import Dict, List, Optional, Any
 from pathlib import Path
 import copy
+import yaml
+from pathlib import Path
 
 
 # ============================================================
@@ -311,3 +313,34 @@ def load_lora_weights(load_path: str) -> Dict[str, Dict[str, torch.Tensor]]:
     print(f"[lora_layers.py] LoRA weights loaded from {load_path}")
     print(f"[lora_layers.py] Layers: {list(weights.keys())}")
     return weights
+
+def rebuild_lora_backbone(backbone, rank: int, train_lora_config_path: str = "configs/train_lora.yaml", target_key: str = "qv"):
+    """Bungkus backbone polos dengan LoRA sesuai konfigurasi training,
+    dibaca dari train_lora.yaml — tanpa perlu training config tersimpan di checkpoint.
+    
+    Args:
+        backbone: Model backbone polos (belum ada LoRA).
+        rank: Rank LoRA yang mau direkonstruksi (harus cocok dengan checkpoint yang akan di-load).
+        train_lora_config_path: Path ke train_lora.yaml.
+        target_key: Key target modules yang dipakai saat training rank ini (mis. "qv").
+    
+    Returns:
+        Backbone yang sudah dibungkus PEFT LoRA, siap untuk load_state_dict.
+    """
+    with open(train_lora_config_path) as f:
+        train_config = yaml.safe_load(f)
+    
+    lora_cfg = train_config["lora"]
+    target_modules = lora_cfg["target_modules_configs"][target_key]["modules"]
+    alpha = rank * lora_cfg.get("alpha_ratio", 2)
+    dropout = lora_cfg.get("lora_dropout", 0.05)
+    bias = lora_cfg.get("bias", "none")
+    
+    return attach_lora_peft(
+        backbone,
+        rank=rank,
+        alpha=alpha,
+        target_modules=target_modules,
+        lora_dropout=dropout,
+        bias=bias,
+    )

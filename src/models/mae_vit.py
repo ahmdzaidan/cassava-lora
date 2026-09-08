@@ -44,7 +44,7 @@ def load_mae_vit_backbone(
     
     if pretrained:
         # Load MAE pretrained model
-        mae_model = ViTMAEModel.from_pretrained(model_name)
+        mae_model = ViTMAEModel.from_pretrained(model_name, attn_implementation="eager")
         
         # Ambil config dan buat ViT model untuk downstream
         vit_config = ViTConfig(
@@ -56,6 +56,8 @@ def load_mae_vit_backbone(
             patch_size=mae_model.config.patch_size,
             num_channels=mae_model.config.num_channels,
         )
+        vit_config.attn_implementation = "eager" 
+        vit_config._attn_implementation = "eager"
         vit_model = ViTModel(vit_config)
         
         # Transfer weights dari MAE encoder ke ViT model
@@ -78,6 +80,8 @@ def load_mae_vit_backbone(
         del mae_model  # Free memory
     else:
         vit_config = ViTConfig()
+        vit_config.attn_implementation = "eager"
+        vit_config._attn_implementation = "eager"
         vit_model = ViTModel(vit_config)
         print("[mae_vit.py] Initialized with random weights")
     
@@ -158,7 +162,9 @@ def load_pretrained_snapshot(save_path: str, device: Optional[str] = None) -> nn
     checkpoint = torch.load(str(save_path), map_location=device)
     
     config = ViTConfig(**checkpoint["config"]) if checkpoint["config"] else ViTConfig()
-    model = ViTModel(config)
+    config.attn_implementation = "eager"
+    config._attn_implementation = "eager"
+    model = ViTModel(config)  # <-- dan ini
     model.load_state_dict(checkpoint["model_state_dict"])
     model = model.to(device)
     

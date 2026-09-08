@@ -218,6 +218,8 @@ def main():
     # Load pretrained backbone
     from src.models.mae_vit import load_pretrained_snapshot, load_mae_vit_backbone
     from src.models.classifier_head import CassavaClassifier, build_classifier_head
+    from src.models.lora_layers import attach_lora_peft
+    from src.models.lora_layers import rebuild_lora_backbone
     
     pretrained_path = resolve_path(config["checkpoints"]["pretrained_backbone"])
     backbone_pretrained = load_pretrained_snapshot(str(pretrained_path), device)
@@ -227,14 +229,16 @@ def main():
     lora_ckpt_path = resolve_path(config["checkpoints"]["lora"][lora_key])
     
     backbone_lora = load_mae_vit_backbone(
-        model_name=model_config["backbone"]["model_name"],
-        pretrained=False, device=device
+      model_name=model_config["backbone"]["model_name"],
+      pretrained=False, device=device
     )
-    
+
+    backbone_lora = rebuild_lora_backbone(backbone_lora, rank=args.rank)  # target_key default "qv"
+
     head_config = model_config["classifier"].copy()
     head_config["hidden_size"] = model_config["backbone"]["architecture"]["hidden_size"]
     head = build_classifier_head(head_config)
-    
+
     model_lora = CassavaClassifier(backbone_lora, head).to(device)
     lora_ckpt = torch.load(str(lora_ckpt_path), map_location=device)
     model_lora.load_state_dict(lora_ckpt["model_state_dict"])

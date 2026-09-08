@@ -256,7 +256,8 @@ def main():
     from src.models.classifier_head import CassavaClassifier, build_classifier_head
     from src.data.dataset import CassavaDataset, get_val_test_transforms
     from torch.utils.data import DataLoader
-    
+    from src.models.lora_layers import rebuild_lora_backbone
+
     print("[cls_shift] Loading pretrained backbone...")
     pretrained_path = resolve_path(config["checkpoints"]["pretrained_backbone"])
     backbone_pretrained = load_pretrained_snapshot(str(pretrained_path), device)
@@ -269,6 +270,8 @@ def main():
         model_name=model_config["backbone"]["model_name"],
         pretrained=False, device=device
     )
+    backbone_lora = rebuild_lora_backbone(backbone_lora, rank=args.rank)
+
     head_config = model_config["classifier"].copy()
     head_config["hidden_size"] = model_config["backbone"]["architecture"]["hidden_size"]
     head = build_classifier_head(head_config)

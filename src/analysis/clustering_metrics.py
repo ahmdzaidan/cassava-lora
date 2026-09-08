@@ -12,7 +12,7 @@ import argparse
 import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
-
+import torch
 import numpy as np
 import pandas as pd
 from sklearn.metrics import silhouette_score, davies_bouldin_score
@@ -154,7 +154,6 @@ def main():
     
     device = config["global"]["device"]
     if device == "cuda" and not torch.cuda.is_available():
-        import torch
         device = "cpu"
     
     class_names = data_config["dataset"]["classes"]
@@ -166,7 +165,8 @@ def main():
     from src.models.classifier_head import CassavaClassifier, build_classifier_head
     from src.data.dataset import CassavaDataset, get_val_test_transforms
     from torch.utils.data import DataLoader
-    import torch
+    from src.models.lora_layers import rebuild_lora_backbone
+
     
     # Load pretrained backbone
     pretrained_path = resolve_path(config["checkpoints"]["pretrained_backbone"])
@@ -179,6 +179,9 @@ def main():
         model_name=model_config["backbone"]["model_name"],
         pretrained=False, device=device
     )
+
+    backbone_lora = rebuild_lora_backbone(backbone_lora, rank=args.rank)
+
     head_config = model_config["classifier"].copy()
     head_config["hidden_size"] = model_config["backbone"]["architecture"]["hidden_size"]
     head = build_classifier_head(head_config)
