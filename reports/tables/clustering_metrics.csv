@@ -1,0 +1,3 @@
+scope,metric,before_lora,after_lora,change,interpretation
+Global,Silhouette Score,-0.004399999976158142,0.19619999825954437,0.20059999823570251,Higher is better (max=1)
+Global,Davies-Bouldin Index,7.971,1.5193,-6.4517,Lower is better (min=0)
